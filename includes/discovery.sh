@@ -39,6 +39,56 @@ steam_libraries(){
 
 find_rl_dir(){
   local sd="${1:-}"
+  local lib="" cand=""
+  # 1) Try appmanifest for exact installdir
+  if [ -f "$sd/steamapps/appmanifest_252950.acf" ]; then
+    local acf="$sd/steamapps/appmanifest_252950.acf"
+    local INST="$(awk -F\" "/\"installdir\"/{print \$4}" "$acf" 2>/dev/null | tr -d "\r")"
+    if [ -n "$INST" ]; then
+      cand="$sd/steamapps/common/$INST"
+      LOG "Appmanifest installdir: $cand"
+      [ -d "$cand" ] && { printf "%s\n" "$cand"; return 0; }
+    fi
+  fi
+  # 2) Probe libraries for common folder names
+  while IFS= read -r lib; do
+    for name in "Rocket League" "rocketleague"; do
+      cand="$lib/steamapps/common/$name"
+      LOG "Check RL dir: $cand"
+      [ -d "$cand" ] && { printf "%s\n" "$cand"; return 0; }
+    done
+  done < <(steam_libraries "$sd")
+  LOG "Fallback RL search under $sd…"
+  [ -n "$sd" ] && find "$sd" -type d \
+    \( -path "*/steamapps/common/Rocket League" -o -path "*/steamapps/common/rocketleague" \) \
+    -print -quit 2>/dev/null || true
+}
+  local sd="${1:-}"
+  local lib="" cand=""
+  # 1) Try appmanifest for exact installdir
+  if [ -f "$sd/steamapps/appmanifest_252950.acf" ]; then
+    local acf="$sd/steamapps/appmanifest_252950.acf"
+    local INST="$(awk -F\" "/\"installdir\"/{print \$4}" "$acf" 2>/dev/null | tr -d "\r")"
+    if [ -n "$INST" ]; then
+      cand="$sd/steamapps/common/$INST"
+      LOG "Appmanifest installdir: $cand"
+      [ -d "$cand" ] && { printf "%s\n" "$cand"; return 0; }
+    fi
+  fi
+  # 2) Probe libraries for common folder names
+  while IFS= read -r lib; do
+    for name in "Rocket League" "rocketleague"; do
+      cand="$lib/steamapps/common/$name"
+      LOG "Check RL dir: $cand"
+      [ -d "$cand" ] && { printf "%s\n" "$cand"; return 0; }
+    done
+  done < <(steam_libraries "$sd")
+  LOG "Fallback RL search under $sd…"
+  [ -n "$sd" ] && find "$sd" -type d \
+    \( -path "*/steamapps/common/Rocket League" -o -path "*/steamapps/common/rocketleague" \) \
+    -print -quit 2>/dev/null || true
+}
+  local sd="${1:-}"
   local lib=""
   while IFS= read -r lib; do
     local cand="$lib/steamapps/common/Rocket League"
