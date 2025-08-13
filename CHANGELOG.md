@@ -61,3 +61,6 @@
 
 ## rev5.0.10 (2025-08-13)
 - Fix: `installers/lib.sh` now launches the platform script without passing an empty first arg when no flags are provided. This removes the spurious “Unknown flag:” error on no-flag runs.
+
+## rev5.0.11 (2025-08-13)
+- Fix: simplify arg handling in `installers/lib.sh` — use `shift` and `0` instead of arrays. Prevents “Unknown flag:” and `(( ${#ARGS[@]} ))` errors.
