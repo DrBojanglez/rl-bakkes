@@ -1,7 +1,7 @@
-# rev4 logging & helpers
+# rev5.0.1 logging & helpers
 set -euo pipefail
 _now(){ date '+%H:%M:%S'; }
-LOG(){ printf "[%s] %s\n" "$(_now)" "$*"; }
+LOG(){ printf "[%s] %s\n" "$(_now)" "$*" >&2; }   # <-- stderr
 WARN(){ printf "[%s] ⚠ %s\n" "$(_now)" "$*" >&2; }
 ERR(){ printf "[%s] ❌ %s\n" "$(_now)" "$*" >&2; exit 70; }
 RUN(){ LOG "\$ $*"; if [ "${DEBUG:-0}" -eq 0 ]; then "$@"; else LOG "(debug: skipped)"; fi; }

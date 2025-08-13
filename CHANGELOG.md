@@ -19,3 +19,8 @@
 - Ultra-modular installers: single shared library `installers/lib.sh`, per-profile manifests, 10-line wrappers.
 - Updates now require editing just `lib.sh` and/or a manifest; wrappers remain unchanged.
 - Keeps rev4.x safety: nounset-safe manifest loop, hardened fetch, arg sanitizer.
+
+## rev5.0.1 (2025-08-13)
+- Logging: direct LOG output to stderr so discovery functions don’t pollute command-substitution results.
+- Env: banner now says “rev5 modular”.
+- Config: refuse to write config when RL_DIR/PFX_DIR/BAKKES_PATH are empty.

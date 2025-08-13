@@ -1,5 +1,10 @@
 # rev4 config
 write_config(){ LOG "Write config: $CONFIG"; cat >"$CONFIG" <<EOF2
+{
+  # refuse to write an invalid config
+  if [ -z "${2:-}" ] || [ -z "${3:-}" ] || [ -z "${4:-}" ]; then
+    ERR "Refusing to write config: missing RL_DIR/PFX_DIR/BAKKES_PATH"
+  fi
 APPID=$APPID
 STEAM_DIR=$1
 RL_DIR=$2
