@@ -24,8 +24,17 @@ fetch core/rl_bakkes_core.sh "$TARGET_DIR/rl_bakkes_core.sh"
 # Fetch modules from manifest
 MAN_TMP="$WORK/modules.manifest"
 fetch installers/modules.manifest "$MAN_TMP"
-while IFS= read -r rel; do [ -z "$rel" ] && continue; mkdir -p "$TARGET_DIR/$(dirname "$rel")"; fetch "$rel" "$TARGET_DIR/$rel"; done < "$MAN_TMP"
-
+rel=""
+while IFS= read -r rel || [ -n "${rel:-}" ]; do
+  # trim
+  line="${rel:-}"
+  # skip blank and comments
+  [[ -z "$line" || "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# ]] && continue
+  # normalize path
+  dir="$(dirname "$line")"
+  mkdir -p "$TARGET_DIR/$dir"
+  fetch "$line" "$TARGET_DIR/$line"
+done < "$MAN_TMP"
 # Fetch launcher for target
 fetch "launchers/debian.sh" "$TARGET_DIR/rl_debian.sh"
 chmod +x "$TARGET_DIR"/rl_*.sh "$TARGET_DIR/rl_bakkes_core.sh" "$TARGET_DIR/includes/"*.sh
