@@ -11,3 +11,6 @@
 ## rev4.1.1 (2025-08-13)
 - Installers: fully nounset-safe manifest loop (pre-init vars + set +u guard); tolerate comments/whitespace.
 
+
+## rev4.1.2 (2025-08-13)
+- Installers: hardened manifest loop (nounset-safe, skips comments/blank lines, re-enables nounset after loop).

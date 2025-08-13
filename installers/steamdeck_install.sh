@@ -25,28 +25,17 @@ fetch core/rl_bakkes_core.sh "$TARGET_DIR/rl_bakkes_core.sh"
 # Fetch modules from manifest (NOUNSET-SAFE)
 MAN_TMP="$WORK/modules.manifest"
 fetch installers/modules.manifest "$MAN_TMP"
-
-set +u
 rel=""
-line=""
+set +u
 while IFS= read -r rel || [ -n "${rel:-}" ]; do
   line="${rel:-}"
-  # skip blanks and comments
-  case "$line" in
-    ""|*[![:space:]]*'#'* ) ;;  # allow inline comments after content
-  esac
-  # strip leading/trailing whitespace
-  line="$(printf "%s" "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-  # ignore blank or comment-only lines
-  if [ -z "$line" ] || [ "${line#\#}" != "$line" ]; then
-    continue
-  fi
+  # skip blank and comments
+  [[ -z "$line" || "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# ]] && continue
   dir="$(dirname "$line")"
   mkdir -p "$TARGET_DIR/$dir"
   fetch "$line" "$TARGET_DIR/$line"
 done < "$MAN_TMP"
 set -u
-
 # Fetch launcher for target
 fetch "launchers/steamdeck.sh" "$TARGET_DIR/rl_steamdeck.sh"
 chmod +x "$TARGET_DIR"/rl_*.sh "$TARGET_DIR/rl_bakkes_core.sh" || true
