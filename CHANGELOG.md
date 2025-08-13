@@ -24,3 +24,8 @@
 - Logging: direct LOG output to stderr so discovery functions don’t pollute command-substitution results.
 - Env: banner now says “rev5 modular”.
 - Config: refuse to write config when RL_DIR/PFX_DIR/BAKKES_PATH are empty.
+
+## rev5.0.2 (2025-08-13)
+- Logging: keep stdout/stderr separate while teeing both to the log (prevents LOG text from entering command substitutions).
+- Runtime: auto-delete corrupted `.rlbakkes.cfg` files that contain stray log lines from previous versions.
+- Keeps prior safeguards: LOG to stderr; refuse to write invalid configs.

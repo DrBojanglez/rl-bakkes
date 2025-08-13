@@ -21,7 +21,7 @@ done
 mkdir -p "$BASE_DIR" "$LOG_DIR"
 TS="$(date '+%Y%m%d.%H%S')"
 LOG_FILE="$LOG_DIR/rl_bakkes_${TS}.log"
-exec > >(tee -a "$LOG_FILE") 2>&1
+exec > >(tee -a "$LOG_FILE") 2> >(tee -a "$LOG_FILE" >exec > >(tee -a "$LOG_FILE") 2>&12)
 LOG "===== RL + BakkesMod launcher (rev5 modular) ====="
 LOG "Config: $CONFIG"
 LOG "Logs:   $LOG_FILE"
