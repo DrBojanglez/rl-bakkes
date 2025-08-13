@@ -80,5 +80,13 @@ main(){
   # Arg sanitizer (ignore leading --)
   ARGS=( "$@" ); if [[ "${ARGS[0]:-}" == "--" ]]; then ARGS=( "${ARGS[@]:1}" ); fi
   say "Launching platform script: $TARGET"
-  bash "$TARGET_DIR/rl_${TARGET}.sh" "${ARGS[@]}"
+  # Arg sanitizer (ignore a leading "--")
+  ARGS=( "$@" )
+  if [[ "${ARGS[0]:-}" == "--" ]]; then ARGS=( "${ARGS[@]:1}" ); fi
+  say "Launching platform script: $TARGET"
+  if (( \${#ARGS[@]} )); then
+    bash "$TARGET_DIR/rl_${TARGET}.sh" "${ARGS[@]}"
+  else
+    bash "$TARGET_DIR/rl_${TARGET}.sh"
+  fi
 }

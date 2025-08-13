@@ -58,3 +58,6 @@
 - New: `includes/protontricks.sh` — installs **protontricks** on Debian/Ubuntu/Pop!_OS via apt (optional Flatpak fallback).
 - Bakkes: use `protontricks 252950 vcrun2017` to set up VC runtime in the RL prefix (with prompt; respects `--debug`).
 - Manifest: Debian loads `protontricks.sh` before `bakkes.sh`.
+
+## rev5.0.10 (2025-08-13)
+- Fix: `installers/lib.sh` now launches the platform script without passing an empty first arg when no flags are provided. This removes the spurious “Unknown flag:” error on no-flag runs.
