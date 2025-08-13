@@ -1,0 +1,8 @@
+# rev5 manifest for Debian/Pop!_OS etc.
+includes/logging.sh
+includes/env.sh
+includes/steam.sh
+includes/discovery.sh
+includes/bakkes.sh
+includes/config.sh
+includes/main.sh

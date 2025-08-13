@@ -14,3 +14,8 @@
 
 ## rev4.1.2 (2025-08-13)
 - Installers: hardened manifest loop (nounset-safe, skips comments/blank lines, re-enables nounset after loop).
+
+## rev5 (2025-08-13)
+- Ultra-modular installers: single shared library `installers/lib.sh`, per-profile manifests, 10-line wrappers.
+- Updates now require editing just `lib.sh` and/or a manifest; wrappers remain unchanged.
+- Keeps rev4.x safety: nounset-safe manifest loop, hardened fetch, arg sanitizer.
