@@ -36,3 +36,7 @@
 ## rev5.0.5 (2025-08-13)
 - Discovery: sanitize `libraryfolders.vdf` parsing (strip CRs/non-printables, normalize slashes, trim/expand ~) and quote all paths.
 - Fixes sporadic “syntax error at or near …” when parsing Steam libraries on Pop!_OS and similar.
+
+## rev5.0.5 (2025-08-13)
+- Discovery: sanitize `libraryfolders.vdf` parsing (strip CRs/non-printables, normalize slashes, trim/expand ~) and quote all paths.
+- Fixes sporadic “syntax error at or near …” when parsing Steam libraries on Pop!_OS and similar.
