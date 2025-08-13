@@ -7,6 +7,7 @@ TARGET="steamdeck"
 say(){ printf "[%s] %s\n" "$(date '+%H:%M:%S')" "$*"; }
 say "OS release:"; [ -f /etc/os-release ] && sed 's/^/  /' /etc/os-release || true
 say "Kernel: $(uname -a)"
+
 WORK="$HOME/.rl-bakkes-tmp"; mkdir -p "$WORK"; cd "$WORK"
 
 fetch(){ local rel="$1" out="$2" url="$RAW_BASE/$rel"; say "Fetch: $url";
@@ -21,23 +22,35 @@ mkdir -p "$TARGET_DIR" "$TARGET_DIR/logs" "$TARGET_DIR/includes"
 # Always fetch core loader
 fetch core/rl_bakkes_core.sh "$TARGET_DIR/rl_bakkes_core.sh"
 
-# Fetch modules from manifest
+# Fetch modules from manifest (NOUNSET-SAFE)
 MAN_TMP="$WORK/modules.manifest"
 fetch installers/modules.manifest "$MAN_TMP"
+
+set +u
 rel=""
+line=""
 while IFS= read -r rel || [ -n "${rel:-}" ]; do
-  # trim
   line="${rel:-}"
-  # skip blank and comments
-  [[ -z "$line" || "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# ]] && continue
-  # normalize path
+  # skip blanks and comments
+  case "$line" in
+    ""|*[![:space:]]*'#'* ) ;;  # allow inline comments after content
+  esac
+  # strip leading/trailing whitespace
+  line="$(printf "%s" "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  # ignore blank or comment-only lines
+  if [ -z "$line" ] || [ "${line#\#}" != "$line" ]; then
+    continue
+  fi
   dir="$(dirname "$line")"
   mkdir -p "$TARGET_DIR/$dir"
   fetch "$line" "$TARGET_DIR/$line"
 done < "$MAN_TMP"
+set -u
+
 # Fetch launcher for target
 fetch "launchers/steamdeck.sh" "$TARGET_DIR/rl_steamdeck.sh"
-chmod +x "$TARGET_DIR"/rl_*.sh "$TARGET_DIR/rl_bakkes_core.sh" "$TARGET_DIR/includes/"*.sh
+chmod +x "$TARGET_DIR"/rl_*.sh "$TARGET_DIR/rl_bakkes_core.sh" || true
+chmod +x "$TARGET_DIR/includes/"*.sh || true
 
 # Arg sanitizer (ignore leading --)
 ARGS=( "$@" ); if [[ "${ARGS[0]:-}" == "--" ]]; then ARGS=( "${ARGS[@]:1}" ); fi

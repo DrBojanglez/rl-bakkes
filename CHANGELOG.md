@@ -7,3 +7,7 @@
 
 ## rev4.1 (2025-08-13)
 - Installers: nounset-safe manifest loop; ignore blank lines and `# comments`; more robust module fetching.
+
+## rev4.1.1 (2025-08-13)
+- Installers: fully nounset-safe manifest loop (pre-init vars + set +u guard); tolerate comments/whitespace.
+
