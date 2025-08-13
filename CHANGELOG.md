@@ -46,3 +46,6 @@
 
 ## rev5.0.6 (2025-08-13)
 - Discovery: read `appmanifest_252950.acf` `installdir`; fallback to both `Rocket League/` and `rocketleague/` folder names (case-sensitive Linux installs).
+
+## rev5.0.7 (2025-08-13)
+- Fix: `includes/discovery.sh` — ensure `find_rl_dir()` is a valid function (no stray `local` at top level). Honors `appmanifest_252950.acf` `installdir` and falls back to `Rocket League/` or `rocketleague/`.
