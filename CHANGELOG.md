@@ -64,3 +64,6 @@
 
 ## rev5.0.11 (2025-08-13)
 - Fix: simplify arg handling in `installers/lib.sh` — use `shift` and `0` instead of arrays. Prevents “Unknown flag:” and `(( ${#ARGS[@]} ))` errors.
+
+## rev5.0.12 (2025-08-13)
+- Installers: replace `installers/lib.sh` to remove array usage in arg handling (use `shift`/`0`). Fixes `(( ${#ARGS[@]} ))` and “Unknown flag:” on no-arg runs.
