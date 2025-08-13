@@ -26,3 +26,4 @@ LOG "===== RL + BakkesMod launcher (rev5 modular) ====="
 LOG "Config: $CONFIG"
 LOG "Logs:   $LOG_FILE"
 LOG "Flags:  debug=$DEBUG force_rediscover=$FORCE no_inject=$NO_INJECT"
+exec > >(tee -a "$LOG_FILE") 2> >(tee -a "$LOG_FILE" >&2)

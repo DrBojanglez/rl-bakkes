@@ -29,3 +29,6 @@
 - Logging: keep stdout/stderr separate while teeing both to the log (prevents LOG text from entering command substitutions).
 - Runtime: auto-delete corrupted `.rlbakkes.cfg` files that contain stray log lines from previous versions.
 - Keeps prior safeguards: LOG to stderr; refuse to write invalid configs.
+
+## rev5.0.3 (2025-08-13)
+- Fix: correct stderr redirection in `includes/env.sh` (use `2>` without a space).
