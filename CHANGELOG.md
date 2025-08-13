@@ -49,3 +49,7 @@
 
 ## rev5.0.7 (2025-08-13)
 - Fix: `includes/discovery.sh` — ensure `find_rl_dir()` is a valid function (no stray `local` at top level). Honors `appmanifest_252950.acf` `installdir` and falls back to `Rocket League/` or `rocketleague/`.
+
+## rev5.0.8 (2025-08-13)
+- Discovery: fix "local can only be used in a function" by replacing `includes/discovery.sh` with a function-scoped version.
+- Keeps sanitized VDF parsing, uses appmanifest `installdir`, and tries both `Rocket League/` and `rocketleague/`.
