@@ -32,3 +32,7 @@
 
 ## rev5.0.3 (2025-08-13)
 - Fix: correct stderr redirection in `includes/env.sh` (use `2>` without a space).
+
+## rev5.0.5 (2025-08-13)
+- Discovery: sanitize `libraryfolders.vdf` parsing (strip CRs/non-printables, normalize slashes, trim/expand ~) and quote all paths.
+- Fixes sporadic “syntax error at or near …” when parsing Steam libraries on Pop!_OS and similar.
