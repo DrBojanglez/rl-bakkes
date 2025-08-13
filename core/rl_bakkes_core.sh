@@ -34,7 +34,7 @@ RUN(){ LOG "\$ $*"; if [ "$DEBUG" -eq 0 ]; then "$@"; else LOG "(debug: skipped)
 has_cmd(){ command -v "$1" >/dev/null 2>&1; }
 ask_yes_no(){ local p="$1" d="${2:-Y}" yn="[y/N]"; [[ $d =~ ^[Yy]$ ]] && yn="[Y/n]"; while true; do read -r -p "$p $yn " ans || ans=""; ans="${ans:-$d}"; case $ans in [Yy]*)return 0;;[Nn]*)return 1;;*)echo "Please answer y or n.";; esac; done; }
 
-# protontricks (native or flatpak)
+# --- protontricks (native or flatpak) ---
 pick_protontricks(){
   if has_cmd protontricks; then echo "protontricks"
   elif has_cmd flatpak && flatpak info com.github.Matoking.protontricks >/dev/null 2>&1; then
@@ -43,7 +43,21 @@ pick_protontricks(){
 }
 PROTONTRICKS_CMD="$(pick_protontricks)"
 
-# discovery
+# --- helper: offer RL install via Steam if missing ---
+offer_rl_install(){
+  WARN "Rocket League is not installed on this machine."
+  if ask_yes_no "Open Steam to install Rocket League now?" "Y"; then
+    if command -v xdg-open >/dev/null 2>&1; then
+      RUN xdg-open "steam://install/252950" || true
+    elif command -v steam >/dev/null 2>&1; then
+      RUN steam steam://install/252950 || true
+    else
+      WARN "Steam not found in PATH; please install Steam and install Rocket League."
+    fi
+  fi
+}
+
+# --- discovery ---
 steam_dir_guess(){
   IFS=':' read -r -a paths <<< "$PRIORITY_STEAM_PATHS"
   for p in "${paths[@]}"; do p="${p/#\~/$HOME}"; [ -d "$p" ] && { echo "$p"; return 0; }; done
@@ -67,7 +81,7 @@ find_rl_dir(){
 find_prefix_dir(){ local sd="$1" p="$sd/steamapps/compatdata/$APPID/pfx"; LOG "Check Proton prefix: $p"; [ -d "$p" ] && echo "$p" || true; }
 find_bakkes(){ local pfx="$1" cand="$pfx/drive_c/Program Files/BakkesMod/BakkesMod.exe"; LOG "Check BakkesMod: $cand"; [ -f "$cand" ] && { echo "$cand"; return 0; }; LOG "Searching BakkesMod.exe under $pfx/drive_c…"; find "$pfx/drive_c" -type f -iname "BakkesMod.exe" -print -quit 2>/dev/null || true; }
 
-# config
+# --- config ---
 write_config(){ LOG "Write config: $CONFIG"; cat >"$CONFIG" <<EOF2
 APPID=$APPID
 STEAM_DIR=$1
@@ -79,7 +93,7 @@ LOG "CONFIG: APPID=$APPID"; LOG "CONFIG: STEAM_DIR=$1"; LOG "CONFIG: RL_DIR=$2";
 load_config(){ LOG "Load config: $CONFIG"; source "$CONFIG"; LOG "Loaded APPID=${APPID:-} STEAM_DIR=${STEAM_DIR:-} RL_DIR=${RL_DIR:-} PFX_DIR=${PFX_DIR:-} BAKKES_PATH=${BAKKES_PATH:-}"; }
 valid_config(){ [ "${APPID:-}" = "252950" ] && [ -d "${STEAM_DIR:-/n}" ] && [ -d "${RL_DIR:-/n}" ] && [ -d "${PFX_DIR:-/n}" ] && [ -f "${BAKKES_PATH:-/n}" ]; }
 
-# launch & inject
+# --- launch & inject ---
 steam_running(){ pgrep -x steam >/dev/null 2>&1 || pgrep -f "flatpak.*com.valvesoftware.Steam" >/dev/null 2>&1; }
 launch_rl(){
   if has_cmd steam; then RUN steam -applaunch "$APPID" >/dev/null 2>&1 &
@@ -102,11 +116,9 @@ download_bakkes_installer(){
   [ -f "$BAKKES_INSTALLER" ] && { LOG "Installer present: $BAKKES_INSTALLER"; return 0; }
   if command -v curl >/dev/null 2>&1; then RUN curl -L "$BAKKES_URL" -o "$BAKKES_INSTALLER"
   elif command -v wget >/dev/null 2>&1; then RUN wget -O "$BAKKES_INSTALLER" "$BAKKES_URL"
-  elif command -v git >/dev/null 2>&1; then
-    # last resort: try to fetch via git if URL points to a repo (unlikely for bakkesmod.com); otherwise instruct user
-    WARN "No curl/wget; cannot download installer from a plain URL. Please install curl or wget."
   else
-    WARN "No downloader available. Please install curl or wget."
+    WARN "No curl/wget. Open download page?"
+    if command -v xdg-open >/dev/null 2>&1 && ask_yes_no "Open in browser?" "Y"; then RUN xdg-open "$BAKKES_URL" || true; WARN "Save to: $BAKKES_INSTALLER and re-run."; fi
   fi
 }
 install_bakkes_into_prefix(){
@@ -115,7 +127,7 @@ install_bakkes_into_prefix(){
   RUN $PROTONTRICKS_CMD -c "wine \"$BAKKES_INSTALLER\"" "$APPID"
 }
 
-# main
+# --- main ---
 LOG "===== RL + BakkesMod launcher ====="
 LOG "Config: $CONFIG"
 LOG "Logs:   $LOG_FILE"
@@ -130,7 +142,11 @@ if [ ! -f "$CONFIG" ]; then
   LOG "Discovering Steam/RL/prefix…"
   STEAM_DIR="$(steam_dir_guess)" || ERR "Steam dir not found."
   LOG "STEAM_DIR=$STEAM_DIR"
-  RL_DIR="$(find_rl_dir "$STEAM_DIR")"; [ -n "${RL_DIR:-}" ] || ERR "Rocket League dir not found (is it installed?)"
+  RL_DIR="$(find_rl_dir "$STEAM_DIR")"
+  if [ -z "${RL_DIR:-}" ]; then
+    offer_rl_install
+    ERR "Rocket League dir not found (install it, then re-run)"
+  fi
   LOG "RL_DIR=$RL_DIR"
   PFX_DIR="$(find_prefix_dir "$STEAM_DIR")"; [ -n "${PFX_DIR:-}" ] || ERR "Proton prefix not found for AppID $APPID"
   LOG "PFX_DIR=$PFX_DIR"
