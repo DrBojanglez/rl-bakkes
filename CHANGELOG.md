@@ -53,3 +53,8 @@
 ## rev5.0.8 (2025-08-13)
 - Discovery: fix "local can only be used in a function" by replacing `includes/discovery.sh` with a function-scoped version.
 - Keeps sanitized VDF parsing, uses appmanifest `installdir`, and tries both `Rocket League/` and `rocketleague/`.
+
+## rev5.0.9 (2025-08-13)
+- New: `includes/protontricks.sh` — installs **protontricks** on Debian/Ubuntu/Pop!_OS via apt (optional Flatpak fallback).
+- Bakkes: use `protontricks 252950 vcrun2017` to set up VC runtime in the RL prefix (with prompt; respects `--debug`).
+- Manifest: Debian loads `protontricks.sh` before `bakkes.sh`.

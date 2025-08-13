@@ -32,3 +32,15 @@ install_bakkes_into_prefix(){
   RUN $PROTONTRICKS_CMD -c "wine \"$BAKKES_INSTALLER\"" "$APPID"
 }
 inject_bakkes(){ [ -z "$PROTONTRICKS_CMD" ] && { WARN "protontricks missing; skipping injection."; return 0; }; RUN $PROTONTRICKS_CMD -c "wine \"$BAKKES_PATH\"" "$APPID"; }
+install_vcruntime(){
+  # Installs vcrun2017 into RL prefix via protontricks
+  if ! command -v protontricks >/dev/null 2>&1; then
+    ensure_protontricks || { WARN "protontricks unavailable; cannot manage vcrun2017 automatically"; return 1; }
+  fi
+  if ask_yes_no "Install vcrun2017 into the RL prefix now?" Y; then
+    if [ "${DEBUG:-0}" -eq 1 ]; then LOG "(debug: skipped) protontricks 252950 vcrun2017"; return 0; fi
+    RUN protontricks 252950 -q vcrun2017 || WARN "protontricks vcrun2017 failed (you can rerun later)"
+  else
+    WARN "User skipped vcrun2017 install"
+  fi
+}

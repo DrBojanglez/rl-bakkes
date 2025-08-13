@@ -2,6 +2,7 @@
 includes/logging.sh
 includes/env.sh
 includes/steam.sh
+includes/protontricks.sh
 includes/discovery.sh
 includes/bakkes.sh
 includes/config.sh
